@@ -8,6 +8,10 @@ import {
   Input,
   SkeletonText,
   Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react'
 import { FaLocationArrow, FaTimes } from 'react-icons/fa'
 
@@ -19,8 +23,9 @@ import {
   DirectionsRenderer,
 } from '@react-google-maps/api'
 import { useRef, useState } from 'react'
+import travelers from './travelers'
 
-const center = { lat: 48.8584, lng: 2.2945 }
+const center = { lat: 40.7309, lng: -73.9973 }
 
 function App() {
   const { isLoaded } = useJsApiLoader({
@@ -28,6 +33,7 @@ function App() {
     libraries: ['places'],
   })
 
+  const [selectedTraveler, setSelectedTraveler] = useState('');
   const [map, setMap] = useState(/** @type google.maps.Map */ (null))
   const [directionsResponse, setDirectionsResponse] = useState(null)
   const [distance, setDistance] = useState('')
@@ -38,9 +44,38 @@ function App() {
   /** @type React.MutableRefObject<HTMLInputElement> */
   const destiantionRef = useRef()
 
+  const handleTravelerChange = (name) => {
+    setSelectedTraveler(name);
+  };
+
   if (!isLoaded) {
     return <SkeletonText />
   }
+
+  const calculateTravelTime = (distance) => {
+    if (selectedTraveler) {
+      const traveler = travelers.find((t) => t.name === selectedTraveler);
+      if (traveler) {
+        const topSpeed = traveler.topSpeed;
+        const travelTime = (distance / topSpeed).toFixed(2);
+        return travelTime
+      }
+    }
+  };
+
+  function formatTravelTime(seconds) {
+    const totalMinutes = Math.round(seconds / 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+  
+    const hoursDisplay = hours > 0 ? `${hours} hour${hours > 1 ? 's' : ''}` : '';
+    const minutesDisplay = minutes > 0 ? `${minutes} minute${minutes > 1 ? 's' : ''}` : '';
+    const secondsDisplay = seconds > 0 ? `${seconds} second${seconds !== 1 ? 's' : ''}` : '';
+  
+    const timeParts = [hoursDisplay, minutesDisplay].filter(part => part !== '');
+    return timeParts.length > 0 ? timeParts.join(', ') : secondsDisplay;
+  }
+  
 
   async function calculateRoute() {
     if (originRef.current.value === '' || destiantionRef.current.value === '') {
@@ -52,12 +87,22 @@ function App() {
       origin: originRef.current.value,
       destination: destiantionRef.current.value,
       // eslint-disable-next-line no-undef
-      travelMode: google.maps.TravelMode.DRIVING,
+      travelMode: google.maps.TravelMode.WALKING,
     })
     setDirectionsResponse(results)
     setDistance(results.routes[0].legs[0].distance.text)
-    setDuration(results.routes[0].legs[0].duration.text)
+    setDuration(
+      formatTravelTime(
+        calculateTravelTime(results.routes[0].legs[0].distance.value)
+        )
+    )
   }
+
+  /*
+  TODO:
+    How is distance as im passing it into my calculate travel time function represented? (Should be miles)
+    Add a text box that gives info on each animal ("The Cheetah can run at speeds of up to x mph")
+  */
 
   function clearRoute() {
     setDirectionsResponse(null)
@@ -120,6 +165,18 @@ function App() {
             </Autocomplete>
           </Box>
 
+          <Menu>
+            <MenuButton as={Button} >
+              {selectedTraveler ? `Selected: ${selectedTraveler}` : 'Select a Traveler'}
+            </MenuButton>
+            <MenuList>
+              {travelers.map((traveler) => (
+                <MenuItem key={traveler.name} onClick={() => handleTravelerChange(traveler.name)}
+                >{traveler.name}</MenuItem>
+              ))}
+            </MenuList>
+          </Menu>
+
           <ButtonGroup>
             <Button colorScheme='pink' type='submit' onClick={calculateRoute}>
               Calculate Route
@@ -133,7 +190,7 @@ function App() {
         </HStack>
         <HStack spacing={4} mt={4} justifyContent='space-between'>
           <Text>Distance: {distance} </Text>
-          <Text>Duration: {duration} </Text>
+          <Text>{ duration ? `Duration: ${duration}`: 'Select a Traveler to see travel time' } </Text>
           <IconButton
             aria-label='center back'
             icon={<FaLocationArrow />}
