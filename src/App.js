@@ -84,6 +84,10 @@ function App() {
     const secondsDisplay = seconds > 0 ? `${seconds} second${seconds !== 1 ? 's' : ''}` : '';
   
     const timeParts = [hoursDisplay, minutesDisplay].filter(part => part !== '');
+
+    if (seconds < 0.01){
+      return ('Less than 0.01 seconds')
+    }
     return timeParts.length > 0 ? timeParts.join(', ') : secondsDisplay;
   }
   

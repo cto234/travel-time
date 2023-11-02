@@ -2,6 +2,8 @@
 
 const travelers = [
     { name: 'Human', topSpeed: 2.5 },
+    { name: 'Usain Bolt', topSpeed: 27.33 },
+    { name: 'The Flash', topSpeed: 8300000 },
     { name: 'Cheetah', topSpeed: 75 },
     { name: 'Horse', topSpeed: 44 },
     { name: 'Pigeon', topSpeed: 60},
