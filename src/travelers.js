@@ -11,6 +11,7 @@ const travelers = [
     { name: 'Snail', topSpeed: 0.03 },
     { name: 'Bicycle', topSpeed: 14 },
     { name: 'Bughatti Chiron', topSpeed: 304.8},
+    { name: 'Boeing 747', topSpeed: 575},
     { name: 'International Space Station', topSpeed: 17400 },
 ]
 

@@ -18,12 +18,12 @@ import { FaLocationArrow, FaTimes } from 'react-icons/fa'
 import {
   useJsApiLoader,
   GoogleMap,
-  Marker,
   Autocomplete,
   DirectionsRenderer,
 } from '@react-google-maps/api'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import travelers from './travelers'
+import WelcomeScreen from './WelcomeScreen';
 
 const center = { lat: 40.7309, lng: -73.9973 }
 
@@ -38,6 +38,17 @@ function App() {
   const [directionsResponse, setDirectionsResponse] = useState(null)
   const [distance, setDistance] = useState('')
   const [duration, setDuration] = useState('')
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(false);
+
+  useEffect(() => {
+    const hasSeenWelcomeScreen = localStorage.getItem('hasSeenWelcomeScreen');
+    setShowWelcomeScreen(!hasSeenWelcomeScreen);
+  }, []);
+
+  const closeWelcomeScreen = () => {
+    localStorage.setItem('hasSeenWelcomeScreen', 'true');
+    setShowWelcomeScreen(false);
+  };
 
   /** @type React.MutableRefObject<HTMLInputElement> */
   const originRef = useRef()
@@ -98,12 +109,6 @@ function App() {
     )
   }
 
-  /*
-  TODO:
-    How is distance as im passing it into my calculate travel time function represented? (Should be miles)
-    Add a text box that gives info on each animal ("The Cheetah can run at speeds of up to x mph")
-  */
-
   function clearRoute() {
     setDirectionsResponse(null)
     setDistance('')
@@ -120,6 +125,7 @@ function App() {
       h='100vh'
       w='100vw'
     >
+      {showWelcomeScreen && <WelcomeScreen onClose={closeWelcomeScreen} />}
       <Box position='absolute' left={0} top={0} h='100%' w='100%'>
         {/* Google Map Box */}
         <GoogleMap
@@ -134,7 +140,6 @@ function App() {
           }}
           onLoad={map => setMap(map)}
         >
-          <Marker position={center} />
           {directionsResponse && (
             <DirectionsRenderer directions={directionsResponse} />
           )}
