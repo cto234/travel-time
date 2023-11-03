@@ -76,14 +76,17 @@ function App() {
 
   function formatTravelTime(seconds) {
     const totalMinutes = Math.round(seconds / 60);
-    const hours = Math.floor(totalMinutes / 60);
+    const totalHours = Math.floor(totalMinutes / 60);
+    const hours = totalHours % 24;
+    const days = Math.floor(totalHours / 24);
     const minutes = totalMinutes % 60;
   
+    const daysDisplay = days > 0 ? `${days} day${days > 1 ? 's' : ''}` : '';
     const hoursDisplay = hours > 0 ? `${hours} hour${hours > 1 ? 's' : ''}` : '';
     const minutesDisplay = minutes > 0 ? `${minutes} minute${minutes > 1 ? 's' : ''}` : '';
     const secondsDisplay = seconds > 0 ? `${seconds} second${seconds !== 1 ? 's' : ''}` : '';
   
-    const timeParts = [hoursDisplay, minutesDisplay].filter(part => part !== '');
+    const timeParts = [daysDisplay, hoursDisplay, minutesDisplay].filter(part => part !== '');
 
     if (seconds < 0.01){
       return ('Less than 0.01 seconds')
