@@ -11,7 +11,7 @@ const travelers = [
     { name: 'Blue Whale', topSpeed: 5 },
     { name: 'Tortoise', topSpeed: 0.62 },
     { name: 'Snail', topSpeed: 0.03 },
-    { name: 'Bicycle', topSpeed: 14 },
+    { name: 'Bicycle', topSpeed: 12 },
     { name: 'Bughatti Chiron', topSpeed: 304.8},
     { name: 'Boeing 747', topSpeed: 575},
     { name: 'International Space Station', topSpeed: 17400 },
